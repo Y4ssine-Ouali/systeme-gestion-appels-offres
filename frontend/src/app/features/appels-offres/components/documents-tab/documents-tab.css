@@ -1,0 +1,167 @@
+.documents-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.docs-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.upload-toggle {
+  font-size: 0.8125rem !important;
+  border-color: #017e84 !important;
+  color: #017e84 !important;
+  border-radius: 4px !important;
+}
+
+.upload-toggle mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+}
+
+.upload-area {
+  background: #f8f9fa;
+  border: 1px dashed #ced4da;
+  border-radius: 4px;
+  padding: 0.875rem;
+}
+
+.upload-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.type-field {
+  min-width: 200px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-wrap {
+  flex: 1;
+  min-width: 200px;
+}
+
+.choose-file-btn {
+  width: 100%;
+  font-size: 0.8125rem !important;
+  color: #495057 !important;
+  border-color: #ced4da !important;
+  border-radius: 4px !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  height: 56px !important;
+}
+
+.choose-file-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  color: #868e96;
+}
+
+.upload-btn {
+  background: #017e84 !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  font-weight: 500;
+  height: 56px !important;
+  min-width: 100px;
+}
+
+.upload-btn[disabled] {
+  opacity: 0.5;
+}
+
+/* Documents table */
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.docs-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #495057;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.docs-table td {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: #212529;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.doc-name {
+  font-weight: 500;
+}
+
+.doc-name mat-icon {
+  display: inline;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #868e96;
+  vertical-align: middle;
+  margin-right: 0.375rem;
+  line-height: 1;
+}
+
+.doc-type-badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  background: #e9ecef;
+  color: #495057;
+}
+
+.dl-btn {
+  color: #017e84 !important;
+}
+
+.dl-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.empty-docs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  color: #868e96;
+}
+
+.empty-docs mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #adb5bd;
+  margin-bottom: 0.5rem;
+}
+
+.empty-docs p {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+:host ::ng-deep .type-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}

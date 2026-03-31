@@ -1,0 +1,27 @@
+.new-ao-btn {
+  background: #017e84 !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  padding: 0 1.125rem !important;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-transform: none;
+  box-shadow: none;
+  transition: background 0.15s ease;
+}
+
+.new-ao-btn:hover {
+  background: #015e61 !important;
+  box-shadow: none;
+}
+
+.new-ao-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 2px;
+}

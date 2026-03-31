@@ -1,0 +1,37 @@
+<div class="pagination-container">
+  <span class="pagination-info">
+    Affichage de {{ startItem() }} à {{ endItem() }} sur {{ totalItems() }} appels d'offres
+  </span>
+
+  <div class="pagination-controls">
+    <button
+      mat-button
+      class="page-btn nav-btn"
+      [disabled]="currentPage() === 1"
+      (click)="pageChange.emit(currentPage() - 1)"
+    >
+      <mat-icon>chevron_left</mat-icon>
+      Précédent
+    </button>
+
+    @for (page of visiblePages(); track page) {
+      @if (page === -1) {
+        <span class="page-ellipsis">...</span>
+      } @else {
+        <button mat-button class="page-btn" [class.active]="page === currentPage()" (click)="pageChange.emit(page)">
+          {{ page }}
+        </button>
+      }
+    }
+
+    <button
+      mat-button
+      class="page-btn nav-btn"
+      [disabled]="currentPage() === totalPages()"
+      (click)="pageChange.emit(currentPage() + 1)"
+    >
+      Suivant
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>

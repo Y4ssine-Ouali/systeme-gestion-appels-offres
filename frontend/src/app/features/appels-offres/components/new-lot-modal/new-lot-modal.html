@@ -1,0 +1,50 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>{{ isEdit ? 'Modifier le lot' : 'Ajouter un lot' }}</h2>
+      <button mat-icon-button (click)="close.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Error -->
+    @if (errorMsg()) {
+      <div class="modal-error">{{ errorMsg() }}</div>
+    }
+
+    <!-- Body -->
+    <form class="modal-body" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-field-full">
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Objet</mat-label>
+          <textarea matInput formControlName="objet" rows="2"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Budget estimatif ({{ currencySymbol() }})</mat-label>
+          <input matInput type="number" formControlName="budgetEstimatif" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Cautionnement provisoire ({{ currencySymbol() }})</mat-label>
+          <input matInput type="number" formControlName="cautionnementProvisoire" />
+        </mat-form-field>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button mat-stroked-button type="button" (click)="close.emit()">Annuler</button>
+        <button mat-flat-button type="submit" class="submit-btn" [disabled]="submitting()">
+          @if (submitting()) {
+            {{ isEdit ? 'Modification...' : 'Création...' }}
+          } @else {
+            {{ isEdit ? 'Modifier le lot' : 'Créer le lot' }}
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="filter-card">
+  <div class="filter-header">
+    <mat-icon class="filter-icon">filter_list</mat-icon>
+    <span class="filter-title">Filtres</span>
+  </div>
+
+  <div class="filter-fields">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Nature du Marché</mat-label>
+      <mat-select
+        [ngModel]="natureMarche()"
+        (ngModelChange)="natureMarche.set($event); emitFilters()"
+      >
+        <mat-option value="">Toutes</mat-option>
+        @for (nature of natures; track nature) {
+          <mat-option [value]="nature">{{ natureLabels[nature] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Date Limite Dépôt</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [ngModel]="dateLimiteDepot()"
+        (ngModelChange)="dateLimiteDepot.set($event); emitFilters()"
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="picker" />
+      <mat-datepicker #picker />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Budget Minimum</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="0"
+        [ngModel]="budgetMin()"
+        (ngModelChange)="budgetMin.set($event); emitFilters()"
+      />
+      <mat-select
+        matTextSuffix
+        [ngModel]="currency()"
+        (ngModelChange)="currency.set($event)"
+        style="width: 50px; font-size: 0.85rem"
+      >
+        @for (c of currencies; track c.code) {
+          <mat-option [value]="c.symbol">{{ c.symbol }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>

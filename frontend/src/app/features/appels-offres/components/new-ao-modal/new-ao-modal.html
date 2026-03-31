@@ -1,0 +1,215 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>Nouvel Appel d'Offre</h2>
+      <button mat-icon-button (click)="close.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    @if (errorMsg(); as err) {
+      <div class="modal-error">{{ err }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-body">
+      <!-- Section: Informations générales -->
+      <div class="form-section">
+        <h3 class="section-title">Informations générales</h3>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Référence</mat-label>
+            <input matInput formControlName="reference" placeholder="AO-2026-001" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="appelOffreType">
+              @for (t of types; track t) {
+                <mat-option [value]="t">{{ typeLabels[t] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Mode de passation</mat-label>
+            <mat-select formControlName="modePassation">
+              @for (m of modes; track m) {
+                <mat-option [value]="m">{{ modeLabels[m] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nature du marché</mat-label>
+            <mat-select formControlName="natureMarche">
+              @for (n of natures; track n) {
+                <mat-option [value]="n">{{ natureLabels[n] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field-full">
+          <mat-label>Objet</mat-label>
+          <textarea
+            matInput
+            formControlName="objet"
+            rows="3"
+            placeholder="Description de l'appel d'offre..."
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Section: Dates & Lieu -->
+      <div class="form-section">
+        <h3 class="section-title">Dates & lieu</h3>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Date d'ouverture</mat-label>
+            <input matInput [matDatepicker]="pickerOuv" formControlName="dateOuverture" />
+            <mat-datepicker-toggle matIconSuffix [for]="pickerOuv" />
+            <mat-datepicker #pickerOuv />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Date limite de dépôt</mat-label>
+            <input matInput [matDatepicker]="pickerLim" formControlName="dateLimiteDepot" />
+            <mat-datepicker-toggle matIconSuffix [for]="pickerLim" />
+            <mat-datepicker #pickerLim />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field-full">
+          <mat-label>Adresse de réception</mat-label>
+          <input matInput formControlName="adresseReception" placeholder="Adresse complète..." />
+        </mat-form-field>
+      </div>
+
+      <!-- Section: Budget & Client -->
+      <div class="form-section">
+        <h3 class="section-title">Budget & client</h3>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Budget estimatif</mat-label>
+            <input matInput type="number" formControlName="budgetEstimatif" placeholder="0.00" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Devise</mat-label>
+            <mat-select formControlName="currencyCode">
+              @for (c of currencies; track c.code) {
+                <mat-option [value]="c.code">{{ c.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field client-field">
+            <mat-form-field appearance="outline" class="client-select">
+              <mat-label>Client</mat-label>
+              <mat-select formControlName="clientId">
+                @for (c of clients(); track c.id) {
+                  <mat-option [value]="c.id">{{ c.clientName }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button
+              mat-icon-button
+              type="button"
+              class="add-client-btn"
+              (click)="toggleNewClientForm()"
+              matTooltip="Ajouter un nouveau client"
+            >
+              <mat-icon>{{ showNewClientForm() ? 'close' : 'person_add' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        @if (showNewClientForm()) {
+          <div class="new-client-card" [formGroup]="newClientForm">
+            <h4 class="new-client-title">
+              <mat-icon class="new-client-icon">person_add</mat-icon>
+              Nouveau client
+            </h4>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Nom du client</mat-label>
+                <input matInput formControlName="clientName" placeholder="Entreprise ABC" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" placeholder="contact@entreprise.tn" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Téléphone</mat-label>
+                <input matInput formControlName="telephone" placeholder="+216 XX XXX XXX" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Secteur</mat-label>
+                <mat-select formControlName="secteur">
+                  @for (s of secteurs; track s) {
+                    <mat-option [value]="s">{{ s === 'PUBLIC' ? 'Public' : 'Privé' }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="form-field-full">
+              <mat-label>Adresse</mat-label>
+              <input matInput formControlName="adresse" placeholder="Adresse du client..." />
+            </mat-form-field>
+
+            <div class="new-client-actions">
+              <button mat-button type="button" (click)="toggleNewClientForm()">Annuler</button>
+              <button
+                mat-flat-button
+                type="button"
+                class="btn-teal"
+                [disabled]="creatingClient()"
+                (click)="createClient()"
+              >
+                @if (creatingClient()) {
+                  Création...
+                } @else {
+                  Ajouter le client
+                }
+              </button>
+            </div>
+          </div>
+        }
+
+        <div class="checkbox-row">
+          <mat-checkbox formControlName="possibiliteGroupement">
+            Possibilité de groupement
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <!-- Section: Champs supplémentaires -->
+      <div class="form-section form-section-last">
+        <app-dynamic-attributes [formArray]="attributsArray" />
+      </div>
+
+      <div class="modal-footer">
+        <button mat-button type="button" (click)="close.emit()">Annuler</button>
+        <button mat-flat-button type="submit" class="submit-btn" [disabled]="submitting()">
+          @if (submitting()) {
+            Création...
+          } @else {
+            Créer l'appel d'offre
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="documents-section">
+  <div class="docs-header">
+    <button mat-stroked-button class="upload-toggle" (click)="showUpload.set(!showUpload())">
+      <mat-icon>upload_file</mat-icon>
+      {{ showUpload() ? 'Annuler' : 'Upload document' }}
+    </button>
+  </div>
+
+  @if (showUpload()) {
+    <div class="upload-area">
+      <div class="upload-row">
+        <mat-form-field appearance="outline" class="type-field">
+          <mat-label>Type de document</mat-label>
+          <mat-select [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+            @for (t of docTypes; track t) {
+              <mat-option [value]="t">{{ typeLabels[t] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="file-input-wrap">
+          <input type="file" #fileInput (change)="onFileSelected($event)" class="file-input" />
+          <button mat-stroked-button (click)="fileInput.click()" class="choose-file-btn">
+            <mat-icon>attach_file</mat-icon>
+            {{ selectedFile() ? selectedFile()!.name : 'Choisir un fichier' }}
+          </button>
+        </div>
+
+        <button
+          mat-flat-button
+          class="upload-btn"
+          [disabled]="!selectedFile() || uploading()"
+          (click)="upload()"
+        >
+          @if (uploading()) {
+            Envoi...
+          } @else {
+            Envoyer
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (documents().length > 0) {
+    <table class="docs-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Type</th>
+          <th>Date upload</th>
+          <th>Uploadé par</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (doc of documents(); track doc.id) {
+          <tr>
+            <td class="doc-name">
+              <mat-icon class="doc-icon">description</mat-icon>
+              {{ doc.nom }}
+            </td>
+            <td>
+              <span class="doc-type-badge">{{ typeLabels[doc.typeDocumentAo] }}</span>
+            </td>
+            <td>{{ formatDate(doc.dateUpload) }}</td>
+            <td>{{ doc.uploadedByNom }}</td>
+            <td>
+              <button mat-icon-button class="dl-btn" (click)="download(doc)">
+                <mat-icon>download</mat-icon>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (!showUpload()) {
+    <div class="empty-docs">
+      <mat-icon>cloud_upload</mat-icon>
+      <p>Aucun document uploadé</p>
+    </div>
+  }
+</div>

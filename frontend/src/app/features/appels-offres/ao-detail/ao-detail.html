@@ -1,0 +1,368 @@
+@if (loading()) {
+  <div class="detail-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Chargement...</span>
+  </div>
+} @else if (ao(); as data) {
+  <!-- Header -->
+  <div class="detail-header">
+    <div class="header-left">
+      <button mat-icon-button class="back-btn" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>{{ data.reference }}</h1>
+        <p class="header-objet">{{ data.objet }}</p>
+      </div>
+    </div>
+    <span
+      class="etat-badge"
+      [class.etat-brouillon]="data.etatGlobal === 'BROUILLON'"
+      [class.etat-publie]="data.etatGlobal === 'PUBLIE'"
+      [class.etat-en-cours]="data.etatGlobal === 'EN_COURS'"
+      [class.etat-cloture]="data.etatGlobal === 'CLOTURE'"
+      [class.etat-annule]="data.etatGlobal === 'ANNULE'"
+      [class.etat-attribue]="data.etatGlobal === 'ATTRIBUE'"
+    >
+      {{ etatLabels[data.etatGlobal] }}
+    </span>
+  </div>
+
+  <div class="detail-content">
+    <!-- Left section -->
+    <div class="detail-main">
+      <!-- Informations générales -->
+      <div class="info-card">
+        <h3 class="card-title">
+          <mat-icon>info</mat-icon>
+          Informations générales
+        </h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Client</span>
+            <span class="info-value">{{ data.clientNom }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Nature du marché</span>
+            <span class="info-value">{{ natureLabels[data.natureMarche] }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Mode de passation</span>
+            <span class="info-value">{{ modeLabels[data.modePassation] }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Type</span>
+            <span class="info-value">{{ typeLabels[data.appelOffreType] }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Date d'ouverture</span>
+            <span class="info-value">{{ formatDate(data.dateOuverture) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Date limite de dépôt</span>
+            <span class="info-value">{{ formatDate(data.dateLimiteDepot) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Budget estimatif</span>
+            @if (budgetFormatted() !== '—') {
+              <span class="info-value budget"
+                >{{ budgetFormatted() }} {{ data.currencySymbol }}</span
+              >
+            } @else {
+              <span class="info-value">—</span>
+            }
+          </div>
+          <div class="info-item">
+            <span class="info-label">Responsable dossier</span>
+            <span class="info-value">{{ data.responsableNom }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <mat-tab-group class="detail-tabs" animationDuration="200ms">
+        <!-- Lots tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">layers</mat-icon>
+            Lots ({{ data.lots.length }})
+          </ng-template>
+          <div class="tab-content">
+            @if (data.lots.length > 0) {
+              <table class="lots-table">
+                <thead>
+                  <tr>
+                    <th>N°</th>
+                    <th>Objet</th>
+                    <th>Budget estimatif</th>
+                    <th>Cautionnement provisoire</th>
+                    <th>Décision</th>
+                    <th>Statut validation</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (lot of sortedLots(); track lot.id) {
+                    <tr>
+                      <td>{{ lot.numero }}</td>
+                      <td>{{ lot.objet }}</td>
+                      <td>
+                        @if (lot.budgetEstimatif) {
+                          {{ formatBudget(lot.budgetEstimatif) }} {{ data.currencySymbol }}
+                        } @else {
+                          —
+                        }
+                      </td>
+                      <td>
+                        @if (lot.cautionnementProvisoire) {
+                          {{ formatBudget(lot.cautionnementProvisoire) }} {{ data.currencySymbol }}
+                        } @else {
+                          —
+                        }
+                      </td>
+                      <td>
+                        @if (lot.decision) {
+                          <span
+                            class="decision-badge"
+                            [class.decision-go]="lot.decision.decision === 'GO'"
+                            [class.decision-nogo]="lot.decision.decision === 'NO_GO'"
+                          >
+                            {{ decisionLabels[lot.decision.decision] }}
+                          </span>
+                        } @else {
+                          <span class="no-decision">—</span>
+                        }
+                      </td>
+                      <td>
+                        @if (lot.decision) {
+                          <span
+                            class="statut-badge"
+                            [class.statut-soumise]="lot.decision.statutValidation === 'SOUMISE'"
+                            [class.statut-validee]="lot.decision.statutValidation === 'VALIDEE'"
+                            [class.statut-rejetee]="lot.decision.statutValidation === 'REJETEE'"
+                          >
+                            {{ statutLabels[lot.decision.statutValidation] }}
+                          </span>
+                        } @else {
+                          <span class="no-decision">—</span>
+                        }
+                      </td>
+                      <td class="col-actions">
+                        @if (!lot.etatAvancement && !lot.decision) {
+                          <button
+                            mat-icon-button
+                            matTooltip="Modifier le lot"
+                            class="action-btn"
+                            (click)="openEditLot(lot)"
+                          >
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <div class="empty-tab">
+                <mat-icon>layers_clear</mat-icon>
+                <p>Aucun lot défini</p>
+              </div>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- Documents tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">description</mat-icon>
+            Documents ({{ data.documents.length }})
+          </ng-template>
+          <div class="tab-content">
+            <app-documents-tab [aoId]="data.id" [documents]="data.documents" />
+          </div>
+        </mat-tab>
+
+        <!-- Historique tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">history</mat-icon>
+            Historique
+          </ng-template>
+          <div class="tab-content">
+            @if (historiqueLoading()) {
+              <div class="empty-tab">
+                <mat-spinner diameter="28"></mat-spinner>
+                <p>Chargement...</p>
+              </div>
+            } @else if (historique().length > 0) {
+              <table class="lots-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Utilisateur</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (h of historique(); track h.id) {
+                    <tr>
+                      <td class="hist-date">{{ formatDateTime(h.dateAction) }}</td>
+                      <td>
+                        <span class="hist-action" [attr.data-action]="h.actionType">
+                          {{ h.actionType }}
+                        </span>
+                      </td>
+                      <td>{{ h.utilisateurNom }}</td>
+                      <td>{{ h.description }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <div class="empty-tab">
+                <mat-icon>history</mat-icon>
+                <p>Aucun historique disponible</p>
+              </div>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- Informations supplémentaires tab -->
+        @if (data.attributsDynamiques.length > 0) {
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">tune</mat-icon>
+              Infos supplémentaires ({{ data.attributsDynamiques.length }})
+            </ng-template>
+            <div class="tab-content">
+              <table class="lots-table">
+                <thead>
+                  <tr>
+                    <th>Clé</th>
+                    <th>Valeur</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (attr of data.attributsDynamiques; track attr.key) {
+                    <tr>
+                      <td>{{ attr.key }}</td>
+                      <td>{{ attr.value }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </mat-tab>
+        }
+      </mat-tab-group>
+    </div>
+
+    <!-- Right sidebar -->
+    <div class="detail-sidebar">
+      <!-- Actions rapides -->
+      <div class="sidebar-card">
+        <h3 class="card-title">
+          <mat-icon>bolt</mat-icon>
+          Actions rapides
+        </h3>
+        <div class="actions-list">
+          <button mat-stroked-button class="action-item">
+            <mat-icon>upload_file</mat-icon>
+            Upload document
+          </button>
+          <button mat-stroked-button class="action-item" (click)="showLotModal.set(true)">
+            <mat-icon>add_circle_outline</mat-icon>
+            Ajouter lot
+          </button>
+          @if (canDecide()) {
+            <button
+              mat-stroked-button
+              class="action-item action-primary"
+              [disabled]="!hasEligibleLots()"
+              [matTooltip]="!hasEligibleLots() ? 'Aucun lot éligible pour une décision' : ''"
+              (click)="showDecisionModal.set(true)"
+            >
+              <mat-icon>gavel</mat-icon>
+              Passer phase décision
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Récapitulatif -->
+      <div class="sidebar-card">
+        <h3 class="card-title">
+          <mat-icon>analytics</mat-icon>
+          Récapitulatif
+        </h3>
+        <div class="recap-grid">
+          <div class="recap-item">
+            <span class="recap-value">{{ data.lots.length }}</span>
+            <span class="recap-label">Lots</span>
+          </div>
+          <div class="recap-item">
+            <span class="recap-value">{{ data.documents.length }}</span>
+            <span class="recap-label">Documents</span>
+          </div>
+          <div class="recap-item full">
+            @if (totalBudgetLots() !== '—') {
+              <span class="recap-value budget"
+                >{{ totalBudgetLots() }} {{ data.currencySymbol }}</span
+              >
+            } @else {
+              <span class="recap-value">—</span>
+            }
+            <span class="recap-label">Budget total lots</span>
+          </div>
+          <div class="recap-item full">
+            <span
+              class="recap-status"
+              [class.etat-brouillon]="data.etatGlobal === 'BROUILLON'"
+              [class.etat-publie]="data.etatGlobal === 'PUBLIE'"
+              [class.etat-en-cours]="data.etatGlobal === 'EN_COURS'"
+              [class.etat-cloture]="data.etatGlobal === 'CLOTURE'"
+              [class.etat-annule]="data.etatGlobal === 'ANNULE'"
+              [class.etat-attribue]="data.etatGlobal === 'ATTRIBUE'"
+            >
+              {{ etatLabels[data.etatGlobal] }}
+            </span>
+            <span class="recap-label">Statut global</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="detail-loading">
+    <mat-icon class="not-found-icon">search_off</mat-icon>
+    <p>Appel d'offre introuvable</p>
+    <button mat-stroked-button (click)="goBack()">Retour à la liste</button>
+  </div>
+}
+
+@if (showLotModal()) {
+  @if (ao(); as data) {
+    <app-new-lot-modal
+      [aoId]="data.id"
+      [existingLots]="data.lots"
+      [lotToEdit]="editingLot()"
+      [currencySymbol]="data.currencySymbol"
+      (close)="closeLotModal()"
+      (created)="onLotCreated()"
+    />
+  }
+}
+
+@if (showDecisionModal()) {
+  @if (ao(); as data) {
+    <app-decision-modal
+      [aoId]="data.id"
+      [lots]="data.lots"
+      [currencySymbol]="data.currencySymbol"
+      (close)="showDecisionModal.set(false)"
+      (saved)="onDecisionSaved()"
+    />
+  }
+}

@@ -1,0 +1,43 @@
+<div class="ao-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1>Appels d'Offres</h1>
+      <p>Visualisez et gérez l'ensemble des opportunités en cours.</p>
+    </div>
+    <app-new-ao-button (clicked)="onNewAO()" />
+  </div>
+
+  <app-ao-filter-bar (filtersChanged)="onFiltersChanged($event)" />
+
+  @if (store.loading()) {
+    <div class="loading-bar">
+      <div class="loading-bar-inner"></div>
+    </div>
+  }
+
+  @if (store.error(); as error) {
+    <div class="error-banner">
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  <app-ao-data-table
+    [data]="store.items()"
+    (viewAO)="onViewAO($event)"
+    (editAO)="onEditAO($event)"
+    (deleteAO)="onDeleteAO($event)"
+  />
+
+  @if (store.totalElements() > 0) {
+    <app-ao-pagination
+      [totalItems]="store.totalElements()"
+      [pageSize]="store.pageSize()"
+      [currentPage]="store.currentPage() + 1"
+      (pageChange)="onPageChange($event)"
+    />
+  }
+</div>
+
+@if (showModal()) {
+  <app-new-ao-modal (close)="onModalClose()" (created)="onAoCreated()" />
+}

@@ -1,0 +1,122 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+
+.modal-container {
+  background: #fff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Header ─── */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+  background: #21262e;
+  border-radius: 8px 8px 0 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.modal-header button {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ─── Error ─── */
+.modal-error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid #f5c6cb;
+}
+
+/* ─── Body ─── */
+.modal-body {
+  padding: 1rem 1.5rem 1.5rem;
+  flex: 1;
+}
+
+/* ─── Form rows ─── */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-field-full {
+  width: 100%;
+  margin-bottom: 0.85rem;
+}
+
+/* ─── Numero hint ─── */
+.numero-hint {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+/* ─── Footer ─── */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #dee2e6;
+  margin-top: 0.5rem;
+}
+
+.submit-btn {
+  background: #017e84 !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  font-weight: 500;
+  padding: 0 1.5rem !important;
+}
+
+.submit-btn:hover:not([disabled]) {
+  background: #015e61 !important;
+}
+
+.submit-btn[disabled] {
+  opacity: 0.6;
+}
+
+/* ─── Hide subscript wrappers for compact layout ─── */
+:host ::ng-deep .modal-body .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}

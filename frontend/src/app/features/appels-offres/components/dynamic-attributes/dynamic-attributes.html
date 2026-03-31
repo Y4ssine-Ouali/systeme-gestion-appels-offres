@@ -1,0 +1,37 @@
+<div class="extra-fields">
+  <div class="fields-header">
+    <span class="fields-title">Champs supplémentaires</span>
+    <button mat-button class="add-field-btn" type="button" (click)="addField()">
+      <mat-icon>add</mat-icon>
+      Ajouter
+    </button>
+  </div>
+
+  @if (formArray().length === 0) {
+    <p class="empty-hint">Aucun champ supplémentaire ajouté.</p>
+  }
+
+  @for (ctrl of formArray().controls; track $index; let i = $index) {
+    <div class="field-row">
+      <mat-form-field appearance="outline" class="field-item">
+        <mat-label>Nom du champ</mat-label>
+        <input matInput [formControl]="getGroup(i).controls['key']" placeholder="Ex: Garantie" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-item">
+        <mat-label>Valeur</mat-label>
+        <input matInput [formControl]="getGroup(i).controls['value']" placeholder="Ex: 5 ans" />
+      </mat-form-field>
+
+      <button
+        mat-icon-button
+        type="button"
+        color="warn"
+        class="remove-btn"
+        (click)="removeField(i)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  }
+</div>

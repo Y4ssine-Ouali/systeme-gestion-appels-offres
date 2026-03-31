@@ -1,0 +1,196 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>
+        <mat-icon>gavel</mat-icon>
+        Décision de participation
+      </h2>
+      <button mat-icon-button (click)="close.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Error -->
+    @if (errorMsg()) {
+      <div class="modal-error">{{ errorMsg() }}</div>
+    }
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Step 1: Lot selection -->
+      <div class="section">
+        <h3 class="section-title">
+          <span class="step-number">1</span>
+          Sélectionner les lots
+        </h3>
+
+        @if (eligibleLots().length === 0) {
+          <div class="empty-lots">
+            <mat-icon>info</mat-icon>
+            <p>
+              Aucun lot éligible pour une décision. Tous les lots ont déjà une décision ou sont en
+              cours de validation.
+            </p>
+          </div>
+        } @else {
+          <div class="lot-select-header">
+            <mat-checkbox [checked]="allSelected" (change)="toggleAllLots($event.checked)">
+              Tout sélectionner ({{ eligibleLots().length }} lots)
+            </mat-checkbox>
+          </div>
+
+          <div class="lot-list">
+            @for (lot of eligibleLots(); track lot.id) {
+              <div
+                class="lot-item"
+                [class.selected]="isLotSelected(lot.id)"
+                (click)="toggleLot(lot.id)"
+              >
+                <mat-checkbox
+                  [checked]="isLotSelected(lot.id)"
+                  (click)="$event.stopPropagation()"
+                  (change)="toggleLot(lot.id)"
+                ></mat-checkbox>
+                <div class="lot-info">
+                  <span class="lot-numero">Lot N°{{ lot.numero }}</span>
+                  <span class="lot-objet">{{ lot.objet }}</span>
+                </div>
+                <span class="lot-budget"
+                  >{{ formatBudget(lot.budgetEstimatif) }} {{ currencySymbol() }}</span
+                >
+              </div>
+            }
+          </div>
+
+          @if (selectedLotIds().size > 0) {
+            <div class="selection-summary">{{ selectedLotIds().size }} lot(s) sélectionné(s)</div>
+          }
+        }
+      </div>
+
+      <!-- Step 2: Decision form -->
+      @if (eligibleLots().length > 0) {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="section">
+            <h3 class="section-title">
+              <span class="step-number">2</span>
+              Décision
+            </h3>
+
+            <div class="decision-radios">
+              <mat-radio-group formControlName="decision">
+                <mat-radio-button value="GO" class="decision-radio go-radio">
+                  <div class="radio-content">
+                    <mat-icon>check_circle</mat-icon>
+                    <div>
+                      <strong>GO</strong>
+                      <span>Participer à l'appel d'offre</span>
+                    </div>
+                  </div>
+                </mat-radio-button>
+                <mat-radio-button value="NO_GO" class="decision-radio nogo-radio">
+                  <div class="radio-content">
+                    <mat-icon>cancel</mat-icon>
+                    <div>
+                      <strong>NO GO</strong>
+                      <span>Ne pas participer</span>
+                    </div>
+                  </div>
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+
+          <!-- Step 3: Justification -->
+          <div class="section">
+            <h3 class="section-title">
+              <span class="step-number">3</span>
+              Justification
+            </h3>
+
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Justification de la décision</mat-label>
+              <textarea
+                matInput
+                formControlName="justificationText"
+                rows="3"
+                placeholder="Expliquez les raisons de votre décision..."
+              ></textarea>
+              <mat-hint align="end"
+                >{{ form.get('justificationText')?.value?.length || 0 }} / 2000</mat-hint
+              >
+            </mat-form-field>
+          </div>
+
+          <!-- Step 4: Motifs de refus (NO_GO only) -->
+          @if (isNoGo) {
+            <div class="section">
+              <h3 class="section-title">
+                <span class="step-number">4</span>
+                Motifs de refus
+                @if (selectedMotifsCount() > 0) {
+                  <span class="motif-count">{{ selectedMotifsCount() }} sélectionné(s)</span>
+                }
+              </h3>
+
+              @for (group of motifGroups(); track group.categorie; let gi = $index) {
+                <div class="motif-category">
+                  <div class="category-header">
+                    <mat-icon>{{ getCategoryIcon(group.categorie) }}</mat-icon>
+                    {{ group.label }}
+                  </div>
+                  <div class="category-items">
+                    @for (item of group.items; track item.motif.id; let ii = $index) {
+                      <div class="motif-item" [class.motif-selected]="item.selected">
+                        <mat-checkbox [checked]="item.selected" (change)="toggleMotif(gi, ii)">
+                          {{ item.motif.libelle }}
+                        </mat-checkbox>
+                        @if (item.selected) {
+                          <input
+                            class="motif-comment-input"
+                            placeholder="Commentaire (optionnel)"
+                            [value]="item.commentaire"
+                            (input)="updateMotifComment(gi, ii, $any($event.target).value)"
+                          />
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (motifGroups().length === 0) {
+                <div class="empty-lots">
+                  <mat-icon>info</mat-icon>
+                  <p>Chargement des motifs de refus...</p>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Footer -->
+          <div class="modal-footer">
+            <button mat-stroked-button type="button" (click)="close.emit()">Annuler</button>
+            <button
+              mat-flat-button
+              type="submit"
+              class="submit-btn"
+              [class.go-btn]="!isNoGo"
+              [class.nogo-btn]="isNoGo"
+              [disabled]="submitting() || selectedLotIds().size === 0"
+            >
+              @if (submitting()) {
+                Soumission en cours...
+              } @else {
+                <ng-container>
+                  {{ isNoGo ? 'Soumettre No Go' : 'Soumettre Go' }}
+                </ng-container>
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

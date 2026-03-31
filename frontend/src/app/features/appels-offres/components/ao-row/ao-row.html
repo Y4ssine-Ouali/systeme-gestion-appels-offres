@@ -1,0 +1,38 @@
+<td class="col-reference">
+  <span class="reference-label">{{ ao().reference }}</span>
+</td>
+<td class="col-objet">
+  <span class="objet-text">{{ ao().objet }}</span>
+</td>
+<td class="col-budget">
+  @if (ao().budgetEstimatif) {
+    <span class="budget-value"
+      >{{ formatBudget(ao().budgetEstimatif) }} {{ ao().currencySymbol }}</span
+    >
+  } @else {
+    <span class="budget-value">—</span>
+  }
+</td>
+<td class="col-date" [class.urgent]="isUrgent()">
+  <span class="date-text">{{ formatDate(ao().dateLimiteDepot) }}</span>
+  @if (isUrgent()) {
+    <mat-icon class="urgent-icon">warning</mat-icon>
+  }
+</td>
+<td class="col-client">{{ ao().clientNom }}</td>
+<td class="col-lots">{{ ao().nombreLots }}</td>
+<td class="col-actions">
+  <div class="actions-group">
+    <button mat-icon-button matTooltip="Voir détails" class="action-btn" (click)="view.emit(ao())">
+      <mat-icon>visibility</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      matTooltip="Supprimer"
+      class="action-btn delete-btn"
+      (click)="delete.emit(ao()); $event.stopPropagation()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</td>

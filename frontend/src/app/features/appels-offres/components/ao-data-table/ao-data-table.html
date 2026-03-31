@@ -1,0 +1,38 @@
+<div class="table-container">
+  @if (data().length > 0) {
+    <div class="table-scroll">
+      <table class="ao-table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Objet</th>
+            <th>Budget estimatif</th>
+            <th>Date limite</th>
+            <th>Client</th>
+            <th>Lots</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ao of data(); track ao.id) {
+            <tr
+              ao-row
+              [ao]="ao"
+              (view)="viewAO.emit($event)"
+              (edit)="editAO.emit($event)"
+              (delete)="deleteAO.emit($event)"
+            ></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <mat-icon>search_off</mat-icon>
+      <p class="empty-title">Aucun appel d'offre trouvé</p>
+      <p class="empty-subtitle">
+        Essayez de modifier vos filtres ou créez un nouvel appel d'offre.
+      </p>
+    </div>
+  }
+</div>

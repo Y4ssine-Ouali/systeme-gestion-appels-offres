@@ -1,0 +1,118 @@
+<div class="layout-container">
+  <!-- Sidebar -->
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav
+      #sidenav
+      [mode]="isMobile() ? 'over' : 'side'"
+      [opened]="isMobile() ? mobileOpen() : true"
+      [class.collapsed]="!isMobile() && sidenavCollapsed()"
+      (closedStart)="mobileOpen.set(false)"
+    >
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        @if (!sidenavCollapsed() || isMobile()) {
+          <img src="assets/logo-placeholder.svg" alt="Logo" class="brand-logo" />
+          <span class="brand-name">Gestion des appels d'offres</span>
+        } @else {
+          <span class="brand-icon">G</span>
+        }
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Navigation -->
+      <mat-nav-list class="nav-list">
+        @for (item of navItems; track item.route) {
+          <a
+            mat-list-item
+            [routerLink]="item.route"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+            (click)="onNavItemClick()"
+            [matTooltip]="sidenavCollapsed() && !isMobile() ? item.label : ''"
+            matTooltipPosition="right"
+          >
+            <mat-icon
+              matListItemIcon
+              [matBadge]="item.badge ?? null"
+              [matBadgeHidden]="!item.badge"
+              matBadgeSize="small"
+              matBadgeColor="warn"
+              >{{ item.icon }}</mat-icon
+            >
+            @if (!sidenavCollapsed() || isMobile()) {
+              <span matListItemTitle>{{ item.label }}</span>
+            }
+          </a>
+        }
+      </mat-nav-list>
+
+      <div class="sidebar-spacer"></div>
+
+      <mat-divider></mat-divider>
+
+      <!-- User section at bottom -->
+      <div class="sidebar-footer">
+        <div class="user-avatar-sm">{{ userInitials() }}</div>
+        @if (!sidenavCollapsed() || isMobile()) {
+          <div class="user-info-sm">
+            <span class="user-name-sm"
+              >{{ authService.currentUser()?.firstName }}
+              {{ authService.currentUser()?.lastName }}</span
+            >
+            <span class="user-email-sm">{{ authService.currentUser()?.email }}</span>
+          </div>
+        }
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content [class.content-collapsed]="!isMobile() && sidenavCollapsed()">
+      <!-- Top toolbar -->
+      <mat-toolbar class="topbar">
+        <button mat-icon-button (click)="toggleSidenav()" aria-label="Toggle navigation">
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <span class="topbar-title">Gestion des Appels d'Offres</span>
+
+        <span class="topbar-spacer"></span>
+
+        <!-- User menu -->
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
+          <div class="topbar-avatar">{{ userInitials() }}</div>
+        </button>
+        <mat-menu #userMenu="matMenu" xPosition="before">
+          <div class="user-menu-header">
+            <div class="user-avatar-lg">{{ userInitials() }}</div>
+            <div class="user-menu-info">
+              <span class="user-menu-name"
+                >{{ authService.currentUser()?.firstName }}
+                {{ authService.currentUser()?.lastName }}</span
+              >
+              <span class="user-menu-email">{{ authService.currentUser()?.email }}</span>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Mon profil</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            <span>Paramètres</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="authService.logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Déconnexion</span>
+          </button>
+        </mat-menu>
+      </mat-toolbar>
+
+      <!-- Page content -->
+      <main class="page-content">
+        <router-outlet />
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,77 @@
+<div class="login-page">
+  <!-- Login form card -->
+  <div class="login-form-panel">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="mobile-logo">GAO</div>
+        <h1>Connexion</h1>
+        <p>Accédez à votre espace de gestion</p>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="alert alert-error" role="alert">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse email</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            placeholder="exemple&#64;entreprise.com"
+            autocomplete="email"
+          />
+          <mat-icon matPrefix>email</mat-icon>
+          @if (loginForm.controls.email.hasError('required')) {
+            <mat-error>L'adresse email est requise.</mat-error>
+          } @else if (loginForm.controls.email.hasError('email')) {
+            <mat-error>Veuillez saisir une adresse email valide.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input
+            matInput
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          />
+          <mat-icon matPrefix>lock</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="
+              showPassword() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
+            "
+          >
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (loginForm.controls.password.hasError('required')) {
+            <mat-error>Le mot de passe est requis.</mat-error>
+          } @else if (loginForm.controls.password.hasError('minlength')) {
+            <mat-error>Le mot de passe doit contenir au moins 6 caractères.</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-flat-button type="submit" class="btn-submit" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
+            <span>Connexion en cours…</span>
+          } @else {
+            <span>Se connecter</span>
+          }
+        </button>
+      </form>
+
+      <p class="footer-text">&copy; 2026 Gestion des Appels d'Offres. Tous droits réservés.</p>
+    </div>
+  </div>
+</div>

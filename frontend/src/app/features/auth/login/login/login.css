@@ -1,0 +1,133 @@
+/* ─── Page layout ─── */
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  background: #eef0f2;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Left branding panel ─── */
+.login-branding {
+  display: none;
+}
+
+/* ─── Right form panel ─── */
+.login-form-panel {
+  width: 100%;
+  max-width: 400px;
+  padding: 1.5rem;
+}
+
+.login-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 2rem 2rem 1.5rem;
+}
+
+/* Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.mobile-logo {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  background: #017e84;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.login-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.login-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.8125rem;
+}
+
+/* Alert */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.8125rem;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+}
+
+.alert-error mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #dc2626;
+}
+
+/* Form fields */
+.full-width {
+  width: 100%;
+}
+
+mat-form-field.full-width {
+  margin-bottom: 0.125rem;
+}
+
+/* Submit button */
+.btn-submit {
+  width: 100%;
+  height: 40px;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #017e84 !important;
+  color: #fff !important;
+}
+
+.btn-submit:hover {
+  background: #015e61 !important;
+}
+
+/* Footer */
+.footer-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #adb5bd;
+  font-size: 0.6875rem;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 960px) {
+  .login-form-panel {
+    padding: 1rem;
+  }
+}

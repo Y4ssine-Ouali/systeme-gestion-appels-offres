@@ -1,0 +1,151 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>
+        <mat-icon>verified</mat-icon>
+        Validation de la décision
+      </h2>
+      <button mat-icon-button (click)="close.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Error -->
+    @if (errorMsg()) {
+      <div class="modal-error">{{ errorMsg() }}</div>
+    }
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Decision summary -->
+      <div class="section">
+        <h3 class="section-title">Résumé de la décision</h3>
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Appel d'offre</span>
+            <span class="summary-value">{{ group().aoReference }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Objet</span>
+            <span class="summary-value">{{ group().aoObjet }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Décision</span>
+            <span
+              class="decision-badge"
+              [class.go]="group().decision === 'GO'"
+              [class.nogo]="group().decision === 'NO_GO'"
+            >
+              {{ group().decision === 'GO' ? 'GO' : 'NO GO' }}
+            </span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Décideur</span>
+            <span class="summary-value">{{ group().decideurNom }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Date décision</span>
+            <span class="summary-value">{{ group().dateDecision }}</span>
+          </div>
+          @if (group().justificationText) {
+            <div class="summary-row">
+              <span class="summary-label">Justification</span>
+              <span class="summary-value">{{ group().justificationText }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Lots concernés -->
+        <h4 class="lots-title">Lots concernés ({{ group().lots.length }})</h4>
+        <div class="lots-list">
+          @for (lot of group().lots; track lot.lotId) {
+            <div class="lot-chip">
+              <span class="lot-numero">Lot N°{{ lot.lotNumero }}</span>
+              <span class="lot-objet">{{ lot.lotObjet }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Validation form -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="section">
+          <h3 class="section-title">Votre décision de validation</h3>
+
+          <div class="decision-radios">
+            <mat-radio-group formControlName="statut" (change)="onStatutChange()">
+              <mat-radio-button value="VALIDEE" class="decision-radio validate-radio">
+                <div class="radio-content">
+                  <mat-icon>check_circle</mat-icon>
+                  <div>
+                    <strong>Valider</strong>
+                    <span>Approuver cette décision</span>
+                  </div>
+                </div>
+              </mat-radio-button>
+              <mat-radio-button value="REJETEE" class="decision-radio reject-radio">
+                <div class="radio-content">
+                  <mat-icon>cancel</mat-icon>
+                  <div>
+                    <strong>Rejeter</strong>
+                    <span>Refuser cette décision</span>
+                  </div>
+                </div>
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+
+        <!-- Comment -->
+        <div class="section">
+          <h3 class="section-title">
+            Commentaire
+            @if (isRejet) {
+              <span class="required-marker">*</span>
+            }
+          </h3>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Commentaire de validation</mat-label>
+            <textarea
+              matInput
+              formControlName="commentaireValidation"
+              rows="4"
+              [placeholder]="
+                isRejet ? 'Veuillez expliquer le motif du rejet...' : 'Commentaire optionnel...'
+              "
+            ></textarea>
+            @if (form.get('commentaireValidation')?.hasError('required')) {
+              <mat-error>Un commentaire est obligatoire en cas de rejet</mat-error>
+            }
+            @if (form.get('commentaireValidation')?.hasError('maxlength')) {
+              <mat-error>Le commentaire ne peut excéder 2000 caractères</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Actions -->
+        <div class="modal-actions">
+          <button mat-button type="button" (click)="close.emit()" [disabled]="submitting()">
+            Annuler
+          </button>
+          @if (submitting()) {
+            <button mat-flat-button type="submit" disabled class="btn-validate">
+              Traitement...
+            </button>
+          } @else if (isRejet) {
+            <button mat-flat-button type="submit" class="btn-reject">
+              <mat-icon>cancel</mat-icon>
+              Rejeter la décision
+            </button>
+          } @else {
+            <button mat-flat-button type="submit" class="btn-validate">
+              <mat-icon>check_circle</mat-icon>
+              Valider la décision
+            </button>
+          }
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

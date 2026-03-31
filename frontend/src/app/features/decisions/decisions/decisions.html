@@ -1,0 +1,212 @@
+<div class="decisions-page">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1>Suivi des décisions</h1>
+      <p>Consultez et validez les décisions relatives aux appels d'offres</p>
+    </div>
+  </div>
+
+  @if (store.loading()) {
+    <div class="loading-bar">
+      <div class="loading-bar-inner"></div>
+    </div>
+  }
+
+  @if (store.error(); as error) {
+    <div class="error-banner">
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  <!-- Tabs: Pending / Processed -->
+  <mat-tab-group animationDuration="200ms">
+    <!-- Tab: En attente de validation -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>pending_actions</mat-icon>
+        <span class="tab-label">En attente</span>
+        @if (store.pendingGroups().length > 0) {
+          <span class="tab-badge">{{ store.pendingGroups().length }}</span>
+        }
+      </ng-template>
+
+      @if (store.pendingGroups().length > 0) {
+        <div class="decisions-grid">
+          @for (group of store.pendingGroups(); track group.groupeId) {
+            <div class="decision-card">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <span class="ao-reference">{{ group.aoReference }}</span>
+                  <span
+                    class="decision-badge"
+                    [class.go]="group.decision === 'GO'"
+                    [class.nogo]="group.decision === 'NO_GO'"
+                  >
+                    {{ decisionLabels[group.decision] }}
+                  </span>
+                </div>
+                <span class="statut-badge soumise">
+                  {{ statutLabels[group.statutValidation] }}
+                </span>
+              </div>
+
+              <div class="card-body">
+                <p class="ao-objet">{{ group.aoObjet }}</p>
+
+                <div class="card-meta">
+                  <div class="meta-item">
+                    <mat-icon>person</mat-icon>
+                    <span>{{ group.decideurNom }}</span>
+                  </div>
+                  <div class="meta-item">
+                    <mat-icon>calendar_today</mat-icon>
+                    <span>{{ formatDate(group.dateDecision) }}</span>
+                  </div>
+                </div>
+
+                @if (group.justificationText) {
+                  <div class="justification">
+                    <mat-icon>format_quote</mat-icon>
+                    <p>{{ group.justificationText }}</p>
+                  </div>
+                }
+
+                <!-- Lots -->
+                <div class="lots-section">
+                  <span class="lots-label">{{ group.lots.length }} lot(s) concerné(s)</span>
+                  <div class="lots-chips">
+                    @for (lot of group.lots; track lot.lotId) {
+                      <span class="lot-chip"> Lot N°{{ lot.lotNumero }} — {{ lot.lotObjet }} </span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions: only DIRECTION can validate -->
+              @if (isDirection()) {
+                <div class="card-actions">
+                  <button
+                    mat-flat-button
+                    class="btn-validate"
+                    (click)="openValidation(group)"
+                    matTooltip="Valider ou rejeter cette décision"
+                  >
+                    <mat-icon>verified</mat-icon>
+                    Traiter la décision
+                  </button>
+                </div>
+              } @else {
+                <div class="card-actions">
+                  <span class="waiting-text">
+                    <mat-icon>hourglass_empty</mat-icon>
+                    En attente de validation par la direction
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else if (!store.loading()) {
+        <div class="empty-state">
+          <mat-icon>check_circle_outline</mat-icon>
+          <p class="empty-title">Aucune décision en attente</p>
+          <p class="empty-subtitle">Toutes les décisions ont été traitées.</p>
+        </div>
+      }
+    </mat-tab>
+
+    <!-- Tab: Décisions traitées -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>history</mat-icon>
+        <span class="tab-label">Historique</span>
+      </ng-template>
+
+      @if (store.processedGroups().length > 0) {
+        <div class="decisions-grid">
+          @for (group of store.processedGroups(); track group.groupeId) {
+            <div class="decision-card processed">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <span class="ao-reference">{{ group.aoReference }}</span>
+                  <span
+                    class="decision-badge"
+                    [class.go]="group.decision === 'GO'"
+                    [class.nogo]="group.decision === 'NO_GO'"
+                  >
+                    {{ decisionLabels[group.decision] }}
+                  </span>
+                </div>
+                <span
+                  class="statut-badge"
+                  [class.validee]="group.statutValidation === 'VALIDEE'"
+                  [class.rejetee]="group.statutValidation === 'REJETEE'"
+                >
+                  {{ statutLabels[group.statutValidation] }}
+                </span>
+              </div>
+
+              <div class="card-body">
+                <p class="ao-objet">{{ group.aoObjet }}</p>
+
+                <div class="card-meta">
+                  <div class="meta-item">
+                    <mat-icon>person</mat-icon>
+                    <span>{{ group.decideurNom }}</span>
+                  </div>
+                  <div class="meta-item">
+                    <mat-icon>calendar_today</mat-icon>
+                    <span>{{ formatDate(group.dateDecision) }}</span>
+                  </div>
+                </div>
+
+                <!-- Lots -->
+                <div class="lots-section">
+                  <span class="lots-label">{{ group.lots.length }} lot(s) concerné(s)</span>
+                  <div class="lots-chips">
+                    @for (lot of group.lots; track lot.lotId) {
+                      <span class="lot-chip"> Lot N°{{ lot.lotNumero }} — {{ lot.lotObjet }} </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Validation info -->
+                <div class="validation-info">
+                  @if (group.validateurNom) {
+                    <div class="meta-item">
+                      <mat-icon>verified_user</mat-icon>
+                      <span>Validé par {{ group.validateurNom }}</span>
+                    </div>
+                  }
+                  @if (group.dateValidation) {
+                    <div class="meta-item">
+                      <mat-icon>event_available</mat-icon>
+                      <span>{{ formatDate(group.dateValidation) }}</span>
+                    </div>
+                  }
+                  @if (group.commentaireValidation) {
+                    <div class="validation-comment">
+                      <mat-icon>comment</mat-icon>
+                      <p>{{ group.commentaireValidation }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (!store.loading()) {
+        <div class="empty-state">
+          <mat-icon>history</mat-icon>
+          <p class="empty-title">Aucun historique</p>
+          <p class="empty-subtitle">Les décisions traitées apparaîtront ici.</p>
+        </div>
+      }
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<!-- Validation modal -->
+@if (validationGroup(); as group) {
+  <app-validation-modal [group]="group" (close)="closeValidation()" (validated)="onValidated()" />
+}
